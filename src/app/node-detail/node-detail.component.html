@@ -1,1 +1,64 @@
-<p>node-detail works!</p>
+<div class="content-right" #detailContent fxFlex fxLayout="row">
+    <!--resizer handler-->
+    <div 
+        class="resizer-xaxis"
+        cdkDrag 
+        cdkDragLockAxis="x" 
+        (cdkDragMoved)="onResizeDetailContainer($event)"
+        cdkDragBoundary=".mat-drawer-container"
+        (cdkDragEnded)="onResizeDetailContainerDragEnded($event)"
+        [cdkDragFreeDragPosition]="DetailContainerFreeDragPosition">
+        <div class="resizer__icon">
+            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 31.8 42.4" style="enable-background:new 0 0 31.8 42.4;" xml:space="preserve">
+                <path d="M15.9,13.1c-0.4,0-0.9-0.2-1.2-0.5c-0.3-0.3-0.5-0.7-0.5-1.2s0.2-0.9,0.5-1.2c0.6-0.6,1.7-0.6,2.4,0c0.3,0.3,0.5,0.7,0.5,1.2s-0.2,0.9-0.5,1.2C16.8,12.9,16.3,13.1,15.9,13.1z"></path><path d="M15.9,22.9c-0.4,0-0.9-0.2-1.2-0.5c-0.3-0.3-0.5-0.7-0.5-1.2s0.2-0.9,0.5-1.2c0.6-0.6,1.7-0.6,2.4,0c0.3,0.3,0.5,0.7,0.5,1.2s-0.2,0.9-0.5,1.2C16.8,22.7,16.3,22.9,15.9,22.9z"></path><path d="M15.9,32.6c-0.4,0-0.9-0.2-1.2-0.5c-0.3-0.3-0.5-0.7-0.5-1.2c0-0.4,0.2-0.9,0.5-1.2c0.6-0.6,1.7-0.6,2.3,0c0.3,0.3,0.5,0.7,0.5,1.2s-0.2,0.9-0.5,1.2C16.8,32.4,16.3,32.6,15.9,32.6z"></path><path d="M15.9,42.4c-0.4,0-0.9-0.2-1.2-0.5c-0.3-0.3-0.5-0.7-0.5-1.2c0-0.4,0.2-0.9,0.5-1.2c0.6-0.6,1.7-0.6,2.3,0c0.3,0.3,0.5,0.7,0.5,1.2s-0.2,0.9-0.5,1.2C16.8,42.2,16.3,42.4,15.9,42.4z"></path></svg>
+        </div>
+    </div>
+
+    <!--main content goes here-->
+    <div class="content" fxLayout="column">
+
+        <div fxLayout fxLayoutAlign="flex-end" class="action-items">
+            <div fxLayout fxLayoutGap="10px">
+                <button mat-icon-button color="primary" 
+                (click)="onEdit()"
+                *ngIf="!EditMode">
+                    <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="primary" 
+                (click)="onSave()"
+                *ngIf="EditMode">
+                    <mat-icon>save</mat-icon>
+                </button>
+                <button mat-icon-button color="primary" 
+                (click)="onCancel()"
+                *ngIf="EditMode">
+                    <mat-icon>cancel</mat-icon>
+                </button>
+            </div>
+        </div>
+
+        <div class="editor"
+            fxLayout="row"
+            fxLayoutAlign="center"
+            fxLayoutGap="20px"
+            fxFlex>
+
+            <ng-container *ngIf="EditMode; else viewmode">
+                    <div  fxFlex="50%">
+                        <textarea [(ngModel)]="markdown" class="notes"></textarea>
+                    </div>
+                    <div  fxFlex="50%" class="md-container">
+                        <ngx-md [data]="markdown"></ngx-md>
+                    </div> 
+            </ng-container>
+            <ng-template #viewmode>
+                    <div  fxFlex class="md-container">
+                        <ngx-md [data]="markdown"></ngx-md>
+                    </div>
+            </ng-template>
+
+              
+        </div>
+
+</div>
+

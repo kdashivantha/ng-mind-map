@@ -12,7 +12,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MaterialModule } from './material.module';
 
-
+import { NgxMdModule } from 'ngx-md';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { environment } from '../environments/environment';
@@ -32,6 +32,7 @@ import { environment } from '../environments/environment';
     FormsModule,
     FlexLayoutModule,
     HttpClientModule,
+    NgxMdModule.forRoot(),
     AngularFireModule.initializeApp(environment.firebaseConfig),
  	  AngularFirestoreModule,
   ],

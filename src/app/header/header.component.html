@@ -1,1 +1,16 @@
-<p>header works!</p>
+<mat-toolbar color="primary">
+    <div>
+      <a>MIND MAP</a>
+    </div>
+    <div fxFlex fxLayout fxLayoutAlign="flex-end">
+      <div fxLayout fxLayoutGap="10px">
+          <button mat-icon-button (click)="fileinput.click()">
+            <mat-icon>cloud_upload</mat-icon>
+          </button>
+          <button mat-icon-button (click)="onBackupData()">
+            <mat-icon>cloud_download</mat-icon>
+          </button>
+          <input #fileinput type="file" (change)="onFileUpload($event)" hidden>
+      </div>
+     </div>
+</mat-toolbar>

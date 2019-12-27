@@ -1,0 +1,71 @@
+.resizer-xaxis {
+  width: 12px;
+  height: 100%;
+  cursor: pointer;
+  flex: none;
+
+  .resizer__icon {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 24px;
+    transform: translateX(-50%) translateY(-50%);
+    fill: #666;
+  }
+}
+
+.content-right {
+  min-width: 320px;
+  overflow: hidden;
+  .content {
+    flex: 1;
+    padding: 15px;
+    overflow: hidden;
+
+    .action-items {
+      position: absolute;
+      right: 15px;
+      top: 10px;
+      background-color: rgba(255, 255, 255, 0.5);
+      border-radius: 20px;
+      border: 1px #ddd solid;
+    }
+    .editor {
+      overflow: hidden;
+
+      textarea {
+        margin: 0px;
+        box-sizing: border-box;
+        font-family: inherit;
+        border: none;
+        width: 100%;
+        height: 100%;
+        resize: none;
+        font-size: 14px;
+      }
+
+      .md-container {
+        overflow-y: auto;
+      }
+      ngx-md {
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+//text area ruler css
+.notes {
+  background-attachment: local;
+  background-image: linear-gradient(to right, white 10px, transparent 10px),
+    linear-gradient(to left, white 10px, transparent 10px),
+    repeating-linear-gradient(
+      white,
+      white 30px,
+      #dfdfdf 30px,
+      #dfdfdf 31px,
+      white 31px
+    );
+  line-height: 31px;
+  padding: 8px 10px;
+}
