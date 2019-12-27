@@ -3,7 +3,16 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  firebaseConfig: {
+    apiKey: "AIzaSyBCHvrBq8WWSo4bUZ3CGTTbuPJpWB0vIj4",
+    authDomain: "kdas-mindmap.firebaseapp.com",
+    databaseURL: "https://kdas-mindmap.firebaseio.com",
+    projectId: "kdas-mindmap",
+    storageBucket: "kdas-mindmap.appspot.com",
+    messagingSenderId: "960872554838",
+    appId: "1:960872554838:web:5d4b3fae3af29b096876f7"
+  }
 };
 
 /*

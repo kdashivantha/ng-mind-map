@@ -12,6 +12,11 @@ import { HttpClientModule } from '@angular/common/http';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MaterialModule } from './material.module';
 
+
+import { AngularFireModule } from '@angular/fire';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { environment } from '../environments/environment';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -26,7 +31,9 @@ import { MaterialModule } from './material.module';
     MaterialModule,
     FormsModule,
     FlexLayoutModule,
-    HttpClientModule
+    HttpClientModule,
+    AngularFireModule.initializeApp(environment.firebaseConfig),
+ 	  AngularFirestoreModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
