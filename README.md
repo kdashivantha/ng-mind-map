@@ -1,2 +1,2 @@
-# ng-mind-map
+# kdas-mind
 angular mind-map with github-api
