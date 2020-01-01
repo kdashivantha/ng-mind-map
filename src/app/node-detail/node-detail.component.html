@@ -45,7 +45,7 @@
 
             <ng-container *ngIf="EditMode; else viewmode">
                     <div  fxFlex="50%">
-                        <textarea [(ngModel)]="markdown" class="notes"></textarea>
+                        <textarea [(ngModel)]="markdown" class="notes" #editmd></textarea>
                     </div>
                     <div  fxFlex="50%" class="md-container">
                         <ngx-md [data]="markdown"></ngx-md>

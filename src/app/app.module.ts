@@ -7,7 +7,7 @@ import { HeaderComponent } from './header/header.component';
 import { MindMapComponent } from './mind-map/mind-map.component';
 import { NodeDetailComponent } from './node-detail/node-detail.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MaterialModule } from './material.module';
@@ -15,6 +15,7 @@ import { MaterialModule } from './material.module';
 import { NgxMdModule } from 'ngx-md';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { AngularFireStorageModule } from '@angular/fire/storage';
 import { environment } from '../environments/environment';
 
 @NgModule({
@@ -30,11 +31,13 @@ import { environment } from '../environments/environment';
     DragDropModule,
     MaterialModule,
     FormsModule,
+    ReactiveFormsModule,
     FlexLayoutModule,
     HttpClientModule,
     NgxMdModule.forRoot(),
     AngularFireModule.initializeApp(environment.firebaseConfig),
- 	  AngularFirestoreModule,
+    AngularFirestoreModule,
+    AngularFireStorageModule
   ],
   providers: [],
   bootstrap: [AppComponent]

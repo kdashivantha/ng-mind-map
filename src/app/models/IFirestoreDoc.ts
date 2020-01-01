@@ -1,0 +1,4 @@
+
+interface IFirestoreDoc {
+  id: string;
+}

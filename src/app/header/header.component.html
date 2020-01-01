@@ -1,9 +1,21 @@
 <mat-toolbar color="primary">
     <div>
-      <a>MIND MAP</a>
+      <form class ="tp-form">
+        <mat-form-field class="example-full-width">
+          <input type="text" placeholder="Start here..." aria-label="Number" matInput [formControl]="myControl" [matAutocomplete]="auto">
+          <mat-autocomplete #auto="matAutocomplete">
+            <mat-option *ngFor="let option of filteredMindMaps | async" [value]="option">
+              {{option}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </form>
     </div>
     <div fxFlex fxLayout fxLayoutAlign="flex-end">
       <div fxLayout fxLayoutGap="10px">
+          <button mat-icon-button (click)="onAddNewMap()">
+            <mat-icon>add_box</mat-icon>
+          </button>
           <button mat-icon-button (click)="fileinput.click()">
             <mat-icon>cloud_upload</mat-icon>
           </button>

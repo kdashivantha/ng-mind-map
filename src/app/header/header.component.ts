@@ -1,5 +1,9 @@
+import { Observable } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
 import { BackupService } from '../services/backup.service';
+import { FormControl } from '@angular/forms';
+import { startWith, map } from 'rxjs/operators';
+import { FirebaseService } from '../services/firebase.service';
 
 @Component({
   selector: 'app-header',
@@ -8,10 +12,27 @@ import { BackupService } from '../services/backup.service';
 })
 export class HeaderComponent implements OnInit {
 
-  constructor( private backupService: BackupService) { }
+  constructor(
+    private backupService: BackupService,
+    private fb: FirebaseService) { }
+
+  myControl = new FormControl();
+  mindMaps: string[] = ['One', 'Two', 'Three'];
+  filteredMindMaps: Observable<string[]>;
 
   ngOnInit() {
+    this.filteredMindMaps = this.myControl.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this._filter(value))
+      );
   }
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+
+    return this.mindMaps.filter(option => option.toLowerCase().includes(filterValue));
+  }
+
 
   onBackupData(){
     this.DownloadDataFile();
@@ -21,6 +42,9 @@ export class HeaderComponent implements OnInit {
     this.LoadDataFile(event.target);
   }
 
+  onAddNewMap() {
+    this.fb.createNewMap(null);
+  }
   private DownloadDataFile(){
     var sub = this.backupService.ReadFromLocalStorage().subscribe(
         (textToSave)=>{
@@ -40,16 +64,16 @@ export class HeaderComponent implements OnInit {
             sub.unsubscribe();
         });
     
-    }
+  }
 
-    private LoadDataFile(inputValue:any){
-        var file:File = inputValue.files[0];
-        var myReader:FileReader = new FileReader();
-        myReader.onloadend = (e) => {
-          debugger;
-            this.backupService.WriteToLocalStorage(JSON.parse(<string>myReader.result));
-        }
-        myReader.readAsText(file);
-    }
+  private LoadDataFile(inputValue:any){
+      var file:File = inputValue.files[0];
+      var myReader:FileReader = new FileReader();
+      myReader.onloadend = (e) => {
+        debugger;
+          this.backupService.WriteToLocalStorage(JSON.parse(<string>myReader.result));
+      }
+      myReader.readAsText(file);
+  }
 
 }
