@@ -12,7 +12,7 @@ import { AngularFireStorage } from '@angular/fire/storage';
   providedIn: "root"
 })
 export class FirebaseService {
-  mapId: string = "xvNiEeIr1VGoTICYc2fn";
+  mapId: string = "TemEZxXLlHecxrVAdz79";
   autoSave: number = 30;
 
   public MapData: Subject<any> = new Subject<any>();
@@ -23,66 +23,17 @@ export class FirebaseService {
     private angularFireStorage: AngularFireStorage
     ) {}
 
-
-  
-  /** firebase utils */
-  convertSnapshots<T>(snaps) {
-    if(!Array.isArray(snaps)){
-      snaps = [snaps];
-    }
-    return <T[]>snaps.map(snap => {
-      return (snap.payload.doc) ? {
-        id: snap.payload.doc.id,
-        ...snap.payload.doc.data()
-      }:
-      {
-        id: snap.payload.id,
-        ...snap.payload.data()
-      };
-    });
-  }
-
-  getDocumentsWithSubcollection<T extends IFirestoreDoc>(
-    collection: string,
-    id: string,
-    subCollection: string
-  ) {
-    return this.angularFirestore
-      .collection(collection)
-      .doc(this.mapId)
-      .snapshotChanges()
-      .pipe(
-        map(this.convertSnapshots),
-        map((documents: T[]) =>
-          documents.map(document => {
-            return this.angularFirestore
-                .collection(`${collection}/${document.id}/${subCollection}`)
-                .snapshotChanges()
-                .pipe(
-                  map(this.convertSnapshots),
-                  map(subdocuments =>
-                    Object.assign(document, { [subCollection]: subdocuments })
-                  )
-                );
-          })
-        ),
-        flatMap(combined => combineLatest(...combined))
-      );
-  }
-
   loadMindMap() {
     this.getDocumentsWithSubcollection<Map>("maps",this.mapId,"items").subscribe(data => { 
       debugger;
       this.MapData.next(data);
     });
   }
+
   getCurrentMap() {
     return this.angularFirestore.collection("maps").doc(this.mapId);
   }
-  /** CRUD nodes */
-  getNodes() {
-    return this.getCurrentMap().snapshotChanges();
-  }
+
   createNode(node: Node, conn: Connection) {
 
     let nodeRef = this.getCurrentMap()
@@ -107,12 +58,6 @@ export class FirebaseService {
 
   }
 
-  getNode(node: Node) {
-    return this.angularFirestore
-      .collection("nodes")
-      .doc(node.id)
-      .snapshotChanges();
-  }
   updateNode(node: Node) {
     return this.angularFirestore
       .collection(`maps/${this.mapId}/items`)
@@ -120,7 +65,8 @@ export class FirebaseService {
       .update(<Node>{
         text: node.text,
         fx: node.fx,
-        fy: node.fy
+        fy: node.fy,
+        markdown: node.markdown
       });
   }
   deleteNode(node: Node) {
@@ -128,13 +74,6 @@ export class FirebaseService {
       .collection("nodes")
       .doc(node.id)
       .delete();
-  }
-  /** CRUD connections */
-  getConnections() {
-    return this.angularFirestore.collection("conn").snapshotChanges();
-  }
-  createConnection(conn: Connection) {
-    return this.angularFirestore.collection("conn").add(conn);
   }
 
 
@@ -163,15 +102,8 @@ export class FirebaseService {
   }
 
   public createNewNode(node: Node) {
-    //created a markdown and link
-    const markdownId = this.angularFirestore.createId();
-    let markdownRef = this.angularFirestore.collection("markdown").doc(markdownId).ref;
-    markdownRef.set(<NodeData>{
-      md: `## Edit Here..`
-    });
 
-    //create node
-    
+    //create node  
     let nodeRef = this.angularFirestore.collection("maps").doc(this.mapId)
     .collection("items")
     .doc(this.angularFirestore.createId()).ref;
@@ -183,7 +115,7 @@ export class FirebaseService {
         fx:0,
         fy:0,
         type: 'node',
-        markdownid:markdownId
+        markdown:`## Edit Here..`
       });
       
     } else {
@@ -194,7 +126,7 @@ export class FirebaseService {
         fx: node.fx,
         fy: node.fy + 100,
         type: 'node',
-        markdownid:markdownId
+        markdown:`## Edit Here..`
       });
 
       let connRef = this.angularFirestore.collection("maps").doc(this.mapId)
@@ -231,21 +163,54 @@ export class FirebaseService {
           .catch(console.error);
   }
 
-  /** MARKDOWN */
-  getNodeData(id: string){
-    return this.angularFirestore
-    .collection("markdown")
-    .doc(id)
-    .snapshotChanges()
-    .pipe(
-      map(this.convertSnapshots)
-    ).subscribe(data => {
-      this.NodeData.next(<NodeData>data[0]);
+
+
+
+
+
+
+  /** firebase utils */
+  convertSnapshots<T>(snaps) {
+    if(!Array.isArray(snaps)){
+      snaps = [snaps];
+    }
+    return <T[]>snaps.map(snap => {
+      return (snap.payload.doc) ? {
+        id: snap.payload.doc.id,
+        ...snap.payload.doc.data()
+      }:
+      {
+        id: snap.payload.id,
+        ...snap.payload.data()
+      };
     });
   }
-  updateNodeMarkdown(markdown: NodeData) {
+
+  getDocumentsWithSubcollection<T extends IFirestoreDoc>(
+    collection: string,
+    id: string,
+    subCollection: string
+  ) {
     return this.angularFirestore
-    .collection("markdown")
-    .doc(markdown.id).set(markdown);
+      .collection(collection)
+      .doc(id)
+      .snapshotChanges()
+      .pipe(
+        map(this.convertSnapshots),
+        map((documents: T[]) =>
+          documents.map(document => {
+            return this.angularFirestore
+                .collection(`${collection}/${document.id}/${subCollection}`)
+                .snapshotChanges()
+                .pipe(
+                  map(this.convertSnapshots),
+                  map(subdocuments =>
+                    Object.assign(document, { [subCollection]: subdocuments })
+                  )
+                );
+          })
+        ),
+        flatMap(combined => combineLatest(...combined))
+      );
   }
 }

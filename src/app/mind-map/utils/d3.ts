@@ -16,7 +16,7 @@ const bindData = (root, data, tag) =>
  * Bind connections to PATH tags on the given SVG
  */
 export const d3Connections = (svg, connections) =>
-  bindData(svg, connections, "path").attr("class", "mindmap-connection");
+  bindData(svg, connections, "path").attr("marker-mid", "url(#triangle)").attr("class", "mindmap-connection");
 
 /* eslint-disable no-param-reassign */
 /**
@@ -47,25 +47,26 @@ export const d3Nodes = (svg, nodes) => {
  */
 export const onTick = (conns, nodes) => {
   const d = conn =>
-    [
-      "M",
-      conn.source.x,
-      ",",
-      conn.source.y,
-      " ",
-      "C",
-      (conn.source.x + conn.target.x) / 2,
-      ",",
-      conn.source.y,
-      " ",
-      (conn.source.x + conn.target.x) / 2,
-      ",",
-      conn.target.y,
-      " ",
-      conn.target.x,
-      ",",
-      conn.target.y
-    ].join("");
+  linkArc(conn);
+    // [
+    //   "M",
+    //   conn.source.x,
+    //   ",",
+    //   conn.source.y,
+    //   " ",
+    //   "C",
+    //   (conn.source.x + conn.target.x) / 2,
+    //   ",",
+    //   conn.source.y,
+    //   " ",
+    //   (conn.source.x + conn.target.x) / 2,
+    //   ",",
+    //   conn.target.y,
+    //   " ",
+    //   conn.target.x,
+    //   ",",
+    //   conn.target.y
+    // ].join("");
 
   // Set the connections path.
   conns.attr("d", d);
@@ -75,6 +76,18 @@ export const onTick = (conns, nodes) => {
     .attr("x", node => node.x - node.width / 2)
     .attr("y", node => node.y - node.height / 2);
 };
+
+function linkArc(d) {
+  var dx = d.target.x - d.source.x,
+      dy = d.target.y - d.source.y,
+      dr = Math.sqrt(dx * dx + dy * dy);
+
+  return `M${d.source.x},${d.source.y} 
+  L${(d.source.x + d.target.x) / 2},${(d.source.y + d.target.y) / 2}  
+  L${d.target.x},${d.target.y}`;
+
+  //return "M" + d.source.x + "," + d.source.y + " A" + dr + "," + dr + " 1 0,1 " + d.target.x + "," + d.target.y;
+}
 
 /*
  * Return drag behavior to use on d3.selection.call().

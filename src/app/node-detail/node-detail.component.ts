@@ -10,7 +10,7 @@ import {
 } from "@angular/core";
 import { CdkDragMove, CdkDragEnd } from "@angular/cdk/drag-drop";
 import { FirebaseService } from "../services/firebase.service";
-import { NodeData } from '../models/node-data';
+import { Node } from '../models/node';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -20,7 +20,7 @@ import { Subscription } from 'rxjs';
 })
 export class NodeDetailComponent implements OnInit, OnDestroy {
   private editMode: boolean = false;
-  private nodeData:NodeData;
+  private node:Node;
   private subscription: Subscription;
   
   @ViewChild("editmd", { static: false }) editorEl: any;
@@ -38,8 +38,8 @@ export class NodeDetailComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.subscription.add(
       this.fb.NodeData.subscribe(data => {
-        this.nodeData = data;
-        this.markdown = this.nodeData.md;
+        this.node = data;
+        this.markdown = this.node.markdown;
       })
     );
   }
@@ -73,13 +73,18 @@ export class NodeDetailComponent implements OnInit, OnDestroy {
   public onSave() {
     this.editMode = false;
     //save to firebase
-    this.nodeData.md = this.markdown;
-    this.fb.updateNodeMarkdown(this.nodeData);
+    this.node.markdown = this.markdown;
+    this.fb.updateNode(this.node);
   }
   public onCancel() {
     this.editMode = false;
-    this.markdown = this.nodeData.md;
+    this.markdown = this.node.markdown;
   }
+
+
+
+
+  
 
   @ViewChild("detailContent", { static: false }) DetailContainer: ElementRef;
   /**

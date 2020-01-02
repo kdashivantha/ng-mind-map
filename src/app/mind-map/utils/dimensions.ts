@@ -26,7 +26,7 @@ export const getDimensions = (html, style, classname) => {
     //@ts-ignore
     dimensions.height = el.offsetHeight;
   
-    //el.remove()
+    el.remove();
     return dimensions;
   };
   

@@ -135,6 +135,20 @@ export class MindMapComponent implements OnInit, AfterViewInit, OnChanges {
 
     // Add subnode group
     svg.append("g").attr("id", "mindmap-subnodes");
+    
+        //arrow
+    svg.append("svg:defs").append("svg:marker")
+      .attr("id", "triangle")
+      .attr("refX", 6)
+      .attr("refY", 6)
+      .attr("markerWidth", 30)
+      .attr("markerHeight", 30)
+      .attr("markerUnits","userSpaceOnUse")
+      .attr("orient", "auto")
+      .append("path")
+      .attr("d", "M 0 0 12 6 0 12 3 6")
+      .style("fill", "#6a6a6a");
+
 
     this.prepareNodes();
 
@@ -197,7 +211,7 @@ export class MindMapComponent implements OnInit, AfterViewInit, OnChanges {
     select(`#node-${d.id}`)
       .classed("node--selected", true);
 
-    this.fb.getNodeData((<Node>d).markdownid);
+    this.fb.NodeData.next((<Node>d));
   }
   /**
    * add new child nodes

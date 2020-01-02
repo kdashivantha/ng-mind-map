@@ -6,5 +6,5 @@ export class Node implements IFirestoreDoc{
     fx: number;
     fy: number;
 
-    markdownid: string;
+    markdown: string;
 }
