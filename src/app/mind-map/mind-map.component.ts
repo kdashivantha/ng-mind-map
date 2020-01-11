@@ -20,15 +20,19 @@ import {
   d3NodeClick
 } from "./utils/d3";
 
-import uuidv4 from "uuid";
+import {
+  TransformState
+} from "./utils/dimensions"
+
 
 import { getDimensions, getViewBox } from "./utils/dimensions";
 import nodeToHTML from "./templates/nodeToHTML";
 import { FirebaseService } from '../services/firebase.service';
 
-import { Node } from '../models/node';
+import { MapNode } from '../models/mapnode';
 import { Connection } from '../models/connection';
 import { Map } from '../models/map';
+import { MindMapService } from '../services/mindmap.service';
 
 @Component({
   selector: 'app-mind-map',
@@ -44,16 +48,19 @@ export class MindMapComponent implements OnInit, AfterViewInit, OnChanges {
   simulation = null;
   svg: any = {};
 
-  constructor(private fb: FirebaseService) { }
+  map: Map;
+
+  constructor(private mindMapService: MindMapService, private fb: FirebaseService) { }
 
   ngOnInit() {
 
-    this.fb.loadMindMap();
+    this.mindMapService.loadMindMap();
 
-    this.fb.MapData.subscribe(data => {
+    this.mindMapService.MapData.subscribe(data => {
       debugger;
-      this.nodes = data[0].items.filter((item=> item.type =='node'));
-      this.connections = data[0].items.filter((item=> item.type =='conn'));
+      this.map = new Map(data[0]);
+      this.nodes = this.map.getNodes();
+      this.connections = this.map.getConnections();
 
       this.renderMap();
     });
@@ -95,12 +102,13 @@ export class MindMapComponent implements OnInit, AfterViewInit, OnChanges {
         node.fy = null;
       });
 
-    nodes.call(d3Drag(this.simulation, svg, nodes).on('end', (d)=> {
-      // if (!event.active) {
-      //   this.updateCoordintesOnDragEnd(d);
-      // }
-    }));
+    nodes.call(d3Drag(this.simulation, svg, nodes));
+    // .on('end', (d)=> {
+    //   console.log('drag end from drag drag'+ event);
+    // }));
+
     nodes.on("click", (d, i) => {
+      if (event.defaultPrevented) return; // click suppressed
       this.nodeClickEvent(d3NodeClick(d, i), d);
     });
 
@@ -130,6 +138,12 @@ export class MindMapComponent implements OnInit, AfterViewInit, OnChanges {
 
     const svg = select(this.svg);
 
+    const currentElements = svg.selectAll("svg > g");
+    let transformState =  null;
+    if(!currentElements.empty()){
+      transformState = svg.selectAll("svg > g").attr("transform")
+    }
+    //, event.transform)
     // Clear the SVG in case there's stuff already there.
     svg.selectAll("*").remove();
 
@@ -179,6 +193,9 @@ export class MindMapComponent implements OnInit, AfterViewInit, OnChanges {
       //.attr("viewBox", getViewBox(nodes.data()))
       .call(d3PanZoom(svg))
       .on("dbClick.zoom", null);
+    
+    if(transformState)
+      svg.selectAll("svg > g").attr("transform", transformState);
   }
 
   /**
@@ -211,20 +228,26 @@ export class MindMapComponent implements OnInit, AfterViewInit, OnChanges {
     select(`#node-${d.id}`)
       .classed("node--selected", true);
 
-    this.fb.NodeData.next((<Node>d));
+    this.mindMapService.NodeData.next((<MapNode>d));
   }
   /**
    * add new child nodes
    */
   addNewNode(target) {
-    this.fb.createNewNode(<Node>target);
+    this.mindMapService.createNewNode(new MapNode(target));
   }
   /**
    * remove a node
    * todo: before remove nodes check all link
    */
   removeNode(d) {
-    this.fb.deleteNode(<Node>d);
+
+    //test clone
+    debugger;
+    var clonedMap = this.map.getDeepCloneMap(<MapNode>d);
+
+    debugger;
+    this.fb.deleteNode(<MapNode>d);
   }
   /**
    * edit node text
@@ -233,14 +256,14 @@ export class MindMapComponent implements OnInit, AfterViewInit, OnChanges {
     var nodeTitle = prompt("node text", d.text);
     if (nodeTitle != null) {
       d.text = nodeTitle;
-      this.fb.updateNode(<Node>d);
+      this.fb.updateNode(<MapNode>d);
       this.renderMap();
     }
   }
 
   updateCoordintesOnDragEnd(d){
     //debugger;
-    this.fb.updateNode(<Node>d);
+    this.fb.updateNode(<MapNode>d);
     //this.renderMap();
   }
 }

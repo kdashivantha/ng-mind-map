@@ -10,8 +10,9 @@ import {
 } from "@angular/core";
 import { CdkDragMove, CdkDragEnd } from "@angular/cdk/drag-drop";
 import { FirebaseService } from "../services/firebase.service";
-import { Node } from '../models/node';
+import { MapNode } from '../models/mapnode';
 import { Subscription } from 'rxjs';
+import { MindMapService } from '../services/mindmap.service';
 
 @Component({
   selector: "app-node-detail",
@@ -20,7 +21,7 @@ import { Subscription } from 'rxjs';
 })
 export class NodeDetailComponent implements OnInit, OnDestroy {
   private editMode: boolean = false;
-  private node:Node;
+  private node:MapNode;
   private subscription: Subscription;
   
   @ViewChild("editmd", { static: false }) editorEl: any;
@@ -30,6 +31,7 @@ export class NodeDetailComponent implements OnInit, OnDestroy {
   constructor(
     private ngZone: NgZone,
     private renderer: Renderer2,
+    private mindMapService: MindMapService,
     private fb: FirebaseService
   ) {
     this.subscription = new Subscription();
@@ -37,7 +39,7 @@ export class NodeDetailComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscription.add(
-      this.fb.NodeData.subscribe(data => {
+      this.mindMapService.NodeData.subscribe(data => {
         this.node = data;
         this.markdown = this.node.markdown;
       })
@@ -74,7 +76,7 @@ export class NodeDetailComponent implements OnInit, OnDestroy {
     this.editMode = false;
     //save to firebase
     this.node.markdown = this.markdown;
-    this.fb.updateNode(this.node);
+    this.mindMapService.updateNode(this.node);
   }
   public onCancel() {
     this.editMode = false;

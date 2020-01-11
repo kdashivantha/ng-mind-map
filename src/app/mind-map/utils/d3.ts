@@ -1,4 +1,4 @@
-import { drag, event, zoom } from "d3";
+import { drag, event, zoom, curveNatural } from "d3";
 
 /**
  * Bind data to a <TAG>, inside a G element, inside the given root element.
@@ -46,6 +46,9 @@ export const d3Nodes = (svg, nodes) => {
  * Callback for forceSimulation tick event.
  */
 export const onTick = (conns, nodes) => {
+
+
+
   const d = conn =>
   linkArc(conn);
     // [
@@ -63,6 +66,11 @@ export const onTick = (conns, nodes) => {
     //   ",",
     //   conn.target.y,
     //   " ",
+    //   conn.target.x-10,
+    //   ",",
+    //   conn.target.y-10,
+    //   " ",
+    //   "L",
     //   conn.target.x,
     //   ",",
     //   conn.target.y
@@ -83,8 +91,8 @@ function linkArc(d) {
       dr = Math.sqrt(dx * dx + dy * dy);
 
   return `M${d.source.x},${d.source.y} 
-  L${(d.source.x + d.target.x) / 2},${(d.source.y + d.target.y) / 2}  
-  L${d.target.x},${d.target.y}`;
+  T${(d.source.x + d.target.x) / 2},${(d.source.y + d.target.y) / 2}  
+  T${d.target.x},${d.target.y}`;
 
   //return "M" + d.source.x + "," + d.source.y + " A" + dr + "," + dr + " 1 0,1 " + d.target.x + "," + d.target.y;
 }
@@ -93,16 +101,17 @@ function linkArc(d) {
  * Return drag behavior to use on d3.selection.call().
  */
 export const d3Drag = (simulation, svg, nodes) => {
+  let wasMoved = false;
   const dragStart = node => {
     if (!event.active) {
       simulation.alphaTarget(0.2).restart();
     }
-
     node.fx = node.x;
     node.fy = node.y;
   };
 
   const dragged = node => {
+    wasMoved = true;
     node.fx = event.x;
     node.fy = event.y;
   };
@@ -111,6 +120,10 @@ export const d3Drag = (simulation, svg, nodes) => {
     if (!event.active) {
       simulation.alphaTarget(0);
     }
+    if(wasMoved){
+      console.log('actually drag end'+ event);
+    }
+    wasMoved = false;
   };
 
   return drag()

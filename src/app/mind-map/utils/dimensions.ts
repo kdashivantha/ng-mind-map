@@ -64,3 +64,7 @@ export const getDimensions = (html, style, classname) => {
     return `${min.join(" ")} ${max.join(" ")}`;
   };
   
+
+  export class TransformState {
+    public transform:string = null;
+  }

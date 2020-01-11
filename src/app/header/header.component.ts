@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { BackupService } from '../services/backup.service';
 import { FormControl } from '@angular/forms';
 import { startWith, map } from 'rxjs/operators';
-import { FirebaseService } from '../services/firebase.service';
+import { MindMapService } from '../services/mindmap.service';
 
 @Component({
   selector: 'app-header',
@@ -13,8 +13,8 @@ import { FirebaseService } from '../services/firebase.service';
 export class HeaderComponent implements OnInit {
 
   constructor(
-    private backupService: BackupService,
-    private fb: FirebaseService) { }
+    private mindMapService: MindMapService,
+    private backupService: BackupService) { }
 
   myControl = new FormControl();
   mindMaps: string[] = ['One', 'Two', 'Three'];
@@ -43,7 +43,7 @@ export class HeaderComponent implements OnInit {
   }
 
   onAddNewMap() {
-    this.fb.createNewMap(null);
+    this.mindMapService.createMindMap(null);
   }
   private DownloadDataFile(){
     var sub = this.backupService.ReadFromLocalStorage().subscribe(

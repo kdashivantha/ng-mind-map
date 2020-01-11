@@ -1,8 +1,7 @@
 import { Injectable } from "@angular/core";
 import { AngularFirestore } from "@angular/fire/firestore";
-import { Node } from "../models/node";
+import { MapNode } from "../models/mapnode";
 import { Map } from "../models/map";
-import { NodeData } from "../models/node-data";
 import { Connection } from "../models/connection";
 import { map, flatMap } from "rxjs/operators";
 import { combineLatest, Observable, Subject, of } from "rxjs";
@@ -15,26 +14,16 @@ export class FirebaseService {
   mapId: string = "TemEZxXLlHecxrVAdz79";
   autoSave: number = 30;
 
-  public MapData: Subject<any> = new Subject<any>();
-  public NodeData: Subject<any> = new Subject<any>();
-
   constructor(
     private angularFirestore: AngularFirestore,
     private angularFireStorage: AngularFireStorage
     ) {}
 
-  loadMindMap() {
-    this.getDocumentsWithSubcollection<Map>("maps",this.mapId,"items").subscribe(data => { 
-      debugger;
-      this.MapData.next(data);
-    });
-  }
-
   getCurrentMap() {
     return this.angularFirestore.collection("maps").doc(this.mapId);
   }
 
-  createNode(node: Node, conn: Connection) {
+  createNode(node: MapNode, conn: Connection) {
 
     let nodeRef = this.getCurrentMap()
       .collection("nodes")
@@ -58,18 +47,18 @@ export class FirebaseService {
 
   }
 
-  updateNode(node: Node) {
+  updateNode(node: MapNode) {
     return this.angularFirestore
       .collection(`maps/${this.mapId}/items`)
       .doc(node.id)
-      .update(<Node>{
+      .update(<MapNode>{
         text: node.text,
         fx: node.fx,
         fy: node.fy,
         markdown: node.markdown
       });
   }
-  deleteNode(node: Node) {
+  deleteNode(node: MapNode) {
     return this.angularFirestore
       .collection("nodes")
       .doc(node.id)
@@ -82,7 +71,7 @@ export class FirebaseService {
    * root node also created
    * @param  {Node} node
    */
-  createNewMap(node: Node) {
+  createNewMap(node: MapNode) {
     const _id = this.angularFirestore.createId();
     let mapRef = this.angularFirestore.collection("maps")
       .doc(_id).ref;
@@ -101,7 +90,7 @@ export class FirebaseService {
     }
   }
 
-  public createNewNode(node: Node) {
+  public createNewNode(node: MapNode) {
 
     //create node  
     let nodeRef = this.angularFirestore.collection("maps").doc(this.mapId)
@@ -110,22 +99,20 @@ export class FirebaseService {
 
     if(!node) {
 
-      nodeRef.set(<Node> {
+      nodeRef.set(<MapNode> {
         text: "untitled",
         fx:0,
         fy:0,
-        type: 'node',
         markdown:`## Edit Here..`
       });
       
     } else {
       //create connected node
 
-      nodeRef.set(<Node> {
+      nodeRef.set(<MapNode> {
         text: "untitled",
         fx: node.fx,
         fy: node.fy + 100,
-        type: 'node',
         markdown:`## Edit Here..`
       });
 
@@ -139,8 +126,6 @@ export class FirebaseService {
         type: 'conn'
       })
     }
-
-    this.loadMindMap();
   }
 
   /**

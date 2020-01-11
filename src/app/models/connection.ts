@@ -1,6 +1,4 @@
-export class Connection implements IFirestoreDoc {
-    id: string;
-    type: string = 'conn';
+export class Connection {
     source: string;
     target: string;
 }

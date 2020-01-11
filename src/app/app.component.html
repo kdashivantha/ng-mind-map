@@ -1,7 +1,7 @@
 <app-header></app-header>
 
-<mat-sidenav-container fxFlex #dragcontainerbound>
-  <mat-sidenav #sidenav mode="side" opened position="end">
+<mat-sidenav-container fxFlex #dragcontainerbound [hasBackdrop]="false">
+  <mat-sidenav #sidenav mode="over" opened position="end">
     <app-node-detail fxFlex></app-node-detail>
   </mat-sidenav>
 
