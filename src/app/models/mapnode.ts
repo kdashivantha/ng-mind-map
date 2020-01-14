@@ -20,7 +20,7 @@ export class MapNode implements IFirestoreDoc{
             "fy": this.fy,
             "markdown": this.markdown,
             "mapReferenceId": this.mapReferenceId,
-            "connections": this.connections        
+            "connections": this.connections || []       
         };
     }
 }

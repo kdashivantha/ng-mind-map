@@ -15,6 +15,7 @@ export class Map implements IMap{
 
     constructor(args = {}) {
         Object.assign(this,args);
+        this.nodes = (this.nodes || [] ).map(n => new MapNode(n));
     }
 
     public get dto() {

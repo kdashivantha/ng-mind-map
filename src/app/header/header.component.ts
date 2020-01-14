@@ -43,7 +43,12 @@ export class HeaderComponent implements OnInit {
   }
 
   onAddNewMap() {
-    this.mindMapService.createMindMap(null);
+    this.mindMapService.createMindMap(null)
+    .subscribe(newMapId => {
+      debugger;
+      this.mindMapService.mapId = newMapId;
+      this.mindMapService.loadMindMap();
+    });
   }
   private DownloadDataFile(){
     var sub = this.backupService.ReadFromLocalStorage().subscribe(

@@ -243,8 +243,14 @@ export class MindMapComponent implements OnInit, AfterViewInit, OnChanges {
   removeNode(d) {
 
     //test clone
-    debugger;
-    var clonedMap = this.map.getDeepCloneMap(<MapNode>d);
+    this.mindMapService.createMindMap(new MapNode(d))
+    .subscribe(newMapId => {
+      debugger;
+
+      this.mindMapService.mapId = newMapId;
+      this.mindMapService.loadMindMap();
+      
+    });
 
     debugger;
     this.fb.deleteNode(<MapNode>d);
@@ -256,7 +262,7 @@ export class MindMapComponent implements OnInit, AfterViewInit, OnChanges {
     var nodeTitle = prompt("node text", d.text);
     if (nodeTitle != null) {
       d.text = nodeTitle;
-      this.fb.updateNode(<MapNode>d);
+      this.mindMapService.updateNode(new MapNode(d));
       this.renderMap();
     }
   }
