@@ -11,7 +11,7 @@ import { AngularFireStorage } from '@angular/fire/storage';
   providedIn: "root"
 })
 export class FirebaseService {
-  mapId: string = "TemEZxXLlHecxrVAdz79";
+  currentMapId: string = "TemEZxXLlHecxrVAdz79";
   autoSave: number = 30;
 
   constructor(
@@ -19,8 +19,17 @@ export class FirebaseService {
     private angularFireStorage: AngularFireStorage
     ) {}
 
+
+  getAllMaps():Observable<any> {
+    return this.angularFirestore.collection("maps")
+                .snapshotChanges()
+                .pipe(
+                  map(this.convertSnapshots)
+                );
+  }
+  
   getCurrentMap() {
-    return this.angularFirestore.collection("maps").doc(this.mapId);
+    return this.angularFirestore.collection("maps").doc(this.currentMapId);
   }
 
   createNode(node: MapNode, conn: Connection) {
@@ -49,7 +58,7 @@ export class FirebaseService {
 
   updateNode(node: MapNode) {
     return this.angularFirestore
-      .collection(`maps/${this.mapId}/items`)
+      .collection(`maps/${this.currentMapId}/items`)
       .doc(node.id)
       .update(<MapNode>{
         text: node.text,
@@ -85,7 +94,7 @@ export class FirebaseService {
         text: 'amith-map'
       });
 
-      this.mapId = _id;
+      this.currentMapId = _id;
       this.createNewNode(null);
     }
   }
@@ -93,7 +102,7 @@ export class FirebaseService {
   public createNewNode(node: MapNode) {
 
     //create node  
-    let nodeRef = this.angularFirestore.collection("maps").doc(this.mapId)
+    let nodeRef = this.angularFirestore.collection("maps").doc(this.currentMapId)
     .collection("items")
     .doc(this.angularFirestore.createId()).ref;
 
@@ -116,7 +125,7 @@ export class FirebaseService {
         markdown:`## Edit Here..`
       });
 
-      let connRef = this.angularFirestore.collection("maps").doc(this.mapId)
+      let connRef = this.angularFirestore.collection("maps").doc(this.currentMapId)
       .collection("items")
       .doc(this.angularFirestore.createId()).ref;
 

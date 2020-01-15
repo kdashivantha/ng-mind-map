@@ -9,7 +9,7 @@ import {
   selectAll,
   event,
   zoom,
-  zoomIdentity
+  zoomIdentity,
 } from "d3";
 import {
   d3Connections,
@@ -19,6 +19,8 @@ import {
   onTick,
   d3NodeClick
 } from "./utils/d3";
+
+import d3ContextMenu, { IMenu } from './utils/contextMenu';
 
 import {
   TransformState
@@ -49,6 +51,9 @@ export class MindMapComponent implements OnInit, AfterViewInit, OnChanges {
   svg: any = {};
 
   map: Map;
+  
+
+  menu: any;
 
   constructor(private mindMapService: MindMapService, private fb: FirebaseService) { }
 
@@ -74,6 +79,34 @@ export class MindMapComponent implements OnInit, AfterViewInit, OnChanges {
     zoom().transform(select(this.svg), zoomIdentity);
     this.renderMap();
   }
+
+  buildContextMenu() {
+    // Define your menu
+    this.menu = [
+      {
+          title: 'Split to a New Map',
+          action: (el,d, i) =>{
+              this.nodeClickEvent('split',d);
+          },
+          render: (data:MapNode,menu:IMenu)=> {
+            menu.disabled = data.mapReferenceId != "";
+            return `<span class="${menu.disabled?'disabled':''}">${menu.title}</span>`;
+          }
+      },
+      {
+          title: 'Delete',
+          action: (el,d, i) => {
+            this.nodeClickEvent('remove',d);
+          },
+          render: (data:MapNode,menu:IMenu)=> {
+            menu.disabled = data.connections.length > 0;
+            return `<span class="${menu.disabled?'disabled':''}">${menu.title}</span>`;
+          }
+      }
+    ]
+
+  }
+
   // methods
   prepareNodes() {
     const render = node => {
@@ -111,6 +144,9 @@ export class MindMapComponent implements OnInit, AfterViewInit, OnChanges {
       if (event.defaultPrevented) return; // click suppressed
       this.nodeClickEvent(d3NodeClick(d, i), d);
     });
+    //attach context menu
+    this.buildContextMenu();
+    nodes.on('contextmenu', d3ContextMenu(this.menu, ()=>{})); // attach menu to element
 
     // Tick the simulation 100 times
     for (let i = 0; i < 100; i += 1) {
@@ -212,6 +248,9 @@ export class MindMapComponent implements OnInit, AfterViewInit, OnChanges {
       case "remove":
         this.removeNode(node);
         break;
+      case "split":
+        this.splitNode(node);
+        break;
       case "click":
         this.clickNode(node);
         break;
@@ -241,19 +280,15 @@ export class MindMapComponent implements OnInit, AfterViewInit, OnChanges {
    * todo: before remove nodes check all link
    */
   removeNode(d) {
-
-    //test clone
+    //this.mindMapService.deleteNode(new MapNode(d));
+  }
+  splitNode(d){
     this.mindMapService.createMindMap(new MapNode(d))
     .subscribe(newMapId => {
-      debugger;
-
-      this.mindMapService.mapId = newMapId;
+      this.mindMapService.CurrentMapId = newMapId;
       this.mindMapService.loadMindMap();
       
     });
-
-    debugger;
-    this.fb.deleteNode(<MapNode>d);
   }
   /**
    * edit node text
